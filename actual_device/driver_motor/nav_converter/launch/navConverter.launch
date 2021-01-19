@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<launch>
+
+<!-- Global yaml-file -->
+  <!-- <arg name="param_file" default="$(find agv_define)/param/robot_param/agvconceptV1.yaml"/> -->
+  <arg name="robot_param" default="$(find agv_define)/param/robot_param/robot.yaml"/>
+  
+  <arg name="driver_name_left"         default="driver_left"/>
+  <arg name="driver_name_right"        default="driver_right"/>
+
+  <arg name="baudrate"            default="115200"/>
+  <arg name="driver_left_port"    default="/dev/ttyS3"/>
+  <arg name="driver_left_id"      default="1"/>
+  <arg name="driver_right_port"    default="/dev/ttyS4"/>
+  <arg name="driver_right_id"      default="2"/>
+
+  <rosparam command="load" file="$(arg robot_param)" />
+  <node pkg="nav_converter" type="nav_converter" name="nav_converter" output="screen">
+    <!-- <rosparam command="load" file="$(arg param_file)" />   -->
+    <param name="driver_name_left" type="string" value="$(arg driver_name_left)"/> 
+    <param name="driver_name_right" type="string" value="$(arg driver_name_right)"/>
+  </node>
+
+   <node pkg="nav_converter" type="blvd20km_controller" name="driver_left_node" output="screen" ns="$(arg driver_name_left)">
+    <param name="baudrate" type="int" value="$(arg baudrate)"/> 
+    <param name="port" type="string" value="$(arg driver_left_port)"/>
+    <param name="id" type="int" value="$(arg driver_left_id)"/>
+  </node>
+  <node pkg="nav_converter" type="blvd20km_controller" name="driver_right_node" output="screen" ns="$(arg driver_name_right)">
+    <param name="baudrate" type="int" value="$(arg baudrate)"/> 
+    <param name="port" type="string" value="$(arg driver_right_port)"/>
+    <param name="id" type="int" value="$(arg driver_right_id)"/>
+  </node>
+
+  <node pkg="nav_converter" type="odometry" name="odom_node" output="screen">
+    <param name="driver_name_left" type="string" value="$(arg driver_name_left)"/>
+    <param name="driver_name_right" type="string" value="$(arg driver_name_right)"/>
+  </node>
+
+  <!-- <node pkg="nav_converter" type="diff_tf.py" name="odom_node" output="screen">
+    <rosparam command="load" file="$(arg robot_param)" />
+    <param name="driver_name_left" type="string" value="$(arg driver_name_left)"/>
+    <param name="driver_name_right" type="string" value="$(arg driver_name_right)"/>
+  </node> -->
+
+</launch>

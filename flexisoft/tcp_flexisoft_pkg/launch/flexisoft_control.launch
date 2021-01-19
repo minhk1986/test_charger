@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Arguments -->
+
+  <!-- <node pkg="tcp_flexisoft_pkg" type="fx_node" respawn="false" name="fx_node" output="screen"></node> -->
+  <node pkg="tcp_flexisoft_pkg" type="ipc_to_fx" respawn="false" name="ipc_to_fx" output="screen"></node>
+
+</launch>

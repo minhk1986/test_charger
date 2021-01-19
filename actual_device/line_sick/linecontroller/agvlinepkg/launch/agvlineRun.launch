@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<launch> 
+
+<!-- Global yaml-file -->
+  <arg name="mlse_param_file"/>
+  <rosparam command="load" file="$(arg mlse_param_file)" />                    
+
+  <node pkg="agvlinepkg" type="agvLineAction" name="agvline" output="screen">
+    <rosparam command="load" file="$(arg mlse_param_file)" />  
+  </node>
+
+  <!-- sick_line_guidance: global configuration -->
+  <include file="$(find sick_line_guidance)/launch/sick_line_guidance.launch">
+    <arg name="yaml" value="sick_line_guidance_mls.yaml"/>
+  </include>
+
+</launch>

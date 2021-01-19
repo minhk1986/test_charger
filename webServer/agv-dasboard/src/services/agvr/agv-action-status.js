@@ -1,0 +1,10 @@
+export const PENDING = 0
+export const ACTIVE = 1
+export const PREEMPTED = 2
+export const SUCCEEDED = 3
+export const ABORTED = 4
+export const REJECTED = 5
+export const PREEMPTING = 6
+export const RECALLING = 7
+export const RECALLED = 8
+export const LOST = 9

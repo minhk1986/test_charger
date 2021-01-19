@@ -1,0 +1,12 @@
+export const FLOAT         = 0
+export const MANUAL        = 1
+export const INITIAL_POSE  = 2
+export const QUALITY_POSE  = 3
+export const ROTATE_GOAL   = 4
+export const MOVE_GOAL     = 5
+export const CHARGING_IN   = 6
+export const CHARGING_OUT  = 7
+export const LIFT_IN       = 8
+export const LIFT_UP       = 9
+export const LIFT_DOWN     = 10
+export const LIFT_OUT      = 11

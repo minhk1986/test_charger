@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<launch>
+
+  <arg name="plc_fx5uc_param"/>
+  <rosparam command="load" file="$(arg plc_fx5uc_param)"/>
+
+  <node pkg="plc_fx5uc" type="fx5uc_controller" name="plc_control" output="screen">
+    <rosparam command="load" file="$(arg plc_fx5uc_param)" />  
+  </node>
+
+</launch>

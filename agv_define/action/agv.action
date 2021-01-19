@@ -1,0 +1,11 @@
+# Define the goal
+uint8 action
+#float vel
+#float pos
+#float data
+---
+# Define the result
+uint32 status
+---
+# Define a feedback message
+float32 percent_complete

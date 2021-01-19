@@ -1,0 +1,4 @@
+
+localization_controller_default_ip_address: "192.168.1.1"
+odom_enable:                                false
+theshold_quality_pose                     : 80

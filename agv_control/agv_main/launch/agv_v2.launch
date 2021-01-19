@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Arguments -->
+  <arg name="topic_front"         default="/sick_safetyscanners_front"/>
+  <arg name="topic_back"          default="/sick_safetyscanners_back"/>
+  <arg name="sensor_ip_front"     default="192.168.1.12"/>
+  <arg name="sensor_ip_back"      default="192.168.1.13"/>
+  <arg name="host_ip"             default="192.168.1.255"/>
+  <arg name="host_udp_port_front" default="6060" />
+  <arg name="host_udp_port_back"  default="6061" />  
+  <arg name="angle_start_front"   default="-2" />
+  <!-- <arg name="angle_start_front"   default="-0.1" />  -->
+  <arg name="angle_end_front"     default="2" />
+  <arg name="angle_start_back"    default="-2" />
+  <arg name="angle_end_back"      default="2" />
+  <arg name="frame_id_front"      default="base_laser_front"/>
+  <arg name="frame_id_back"       default="base_laser_back"/>
+
+  <!-- MicroScan3 - sick_safetyscans -->
+  <include file="$(find sick_safetyscanners)/launch/sick_safetyscanners.launch">
+    <arg name="topic"         value="$(arg topic_front)"/>
+    <arg name="sensor_ip"     value="$(arg sensor_ip_front)"/>
+    <arg name="host_ip"       value="$(arg host_ip)"/>
+    <arg name="host_udp_port" value="$(arg host_udp_port_front)"/>
+    <arg name="frame_id"      value="$(arg frame_id_front)"/>
+    <arg name="angle_start"   value="$(arg angle_start_front)"/>
+    <arg name="angle_end"     value="$(arg angle_end_front)"/>
+  </include>
+
+  <!-- agv_v1 -->
+  <arg name="urdf_file" default="$(find xacro)/xacro --inorder '$(find agv_description)/urdf/agv_v1.urdf.xacro'" />
+  <param name="robot_description" command="$(arg urdf_file)" />
+  <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
+    <param name="publish_frequency" type="double" value="50.0" />
+  </node>
+  
+  <!-- Map server -->
+  <!-- <arg name="map_file" default="$(find agv_description)/maps/lobbyA1.yaml"/> -->
+  <!-- <arg name="map_file" default="$(find agv_description)/maps/mapBuild.yaml"/> -->
+  <!-- <arg name="map_file" default="$(find agv_description)/maps/mapB4.yaml"/> -->
+  <!-- <arg name="map_file" default="$(find agv_description)/maps/LED_LIGHTING_1/ledLighting_1.yaml"/> -->
+  <arg name="map_file" default="$(find agv_description)/maps/LED_LIGHTING_2/ledLighting_2.yaml"/>
+  <!-- <arg name="map_file" default="$(find agv_description)/maps/SMAP_SMET_LEDLIGNTING/ledLighting_full_map_ros.yaml"/> -->
+  <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)"/>
+
+  <!-- sick_lidar_localization -->
+  <arg name="sim1000_ip" default="192.168.1.1"/>
+  <arg name="sim_loc_param" default="$(find agv_define)/param/sim1000_param/sim_loc_driver.yaml"/> 
+  <arg name="sim1000_param" default="$(find agv_define)/param/sim1000_param/sim1000.yaml"/> 
+  <include file="$(find control_lidar_localization)/launch/control_lidar_localization.launch">
+    <arg name="sim1000_ip" value="$(arg sim1000_ip)"/>
+    <arg name="sim_loc_param" value="$(arg sim_loc_param)"/>
+    <arg name="sim1000_param" value="$(arg sim1000_param)"/>
+  </include>
+
+  <!-- Flexisoft -->
+  <include file="$(find tcp_flexisoft_pkg)/launch/flexisoft_control.launch"></include> 
+
+  <!-- move_base -->
+  <arg name="move_forward_only" default="false"/>
+  <include file="$(find agv_main)/launch/move_base.launch">
+    <arg name="move_forward_only" value="$(arg move_forward_only)"/>
+  </include>
+
+  <!-- line agv -->
+  <!-- CHO NAY EM HIEP DEP ZAI THEM VAO -->
+  <arg name="mlse_param_file" default="$(find agv_define)/param/robot_param/agvconceptV1.yaml"/>
+  <include file="$(find agvlinepkg)/launch/agvlineRun.launch">
+    <arg name="mlse_param_file" value="$(arg mlse_param_file)"/>
+  </include>
+  <!-- Motor Driver converter -->
+  <arg name="robot_param" default="$(find agv_define)/param/robot_param/robot.yaml"/>
+  <include file="$(find nav_converter)/launch/navConverter.launch">
+    <!-- <arg name="param_file" value="$(arg mlse_param_file)"/> -->
+    <arg name="robot_param" value="$(arg robot_param)"/>
+  </include>
+<!-- ******************************************************************* -->
+
+
+  <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch"></include>
+
+  <!-- joint_state_publisher -->
+  <node pkg="joint_state_publisher" type="joint_state_publisher" respawn="false" name="joint_state_publisher" output="screen"/>
+
+  <!-- PLC -->
+  <arg name="plc_fx5uc_param" default="$(find agv_define)/param/robot_param/plcFx5ucParam.yaml"/>
+  <include file="$(find plc_fx5uc)/launch/plc.launch">
+    <arg name="plc_fx5uc_param" value="$(arg plc_fx5uc_param)"/>
+  </include>
+
+  <!-- diagnostics -->
+   <!-- <include file="$(find agv_main)/launch/agv_diagnostic.launch"></include>  -->
+
+  <include file="$(find agv_main)/launch/agv_main.launch"></include>
+  
+  <!-- rviz -->
+  <!-- <arg name="open_rviz" default="true"/> -->
+  <arg name="open_rviz" default="false"/>
+  <group if="$(arg open_rviz)"> 
+    <node pkg="rviz" type="rviz" name="rviz" required="true"
+      args="-d $(find agv_description)/rviz/agv_main.rviz"/>
+  </group>
+  
+</launch>

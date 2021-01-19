@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Arguments -->
+
+  <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch"></include>
+
+  <!-- sick_lidar_localization -->
+  <arg name="sim1000_ip" default="192.168.1.1"/>
+  <arg name="sim_loc_param" default="$(find agv_define)/param/sim1000_param/sim_loc_driver.yaml"/> 
+  <arg name="sim1000_param" default="$(find agv_define)/param/sim1000_param/sim1000.yaml"/> 
+  <include file="$(find control_lidar_localization)/launch/control_lidar_localization.launch">
+    <arg name="sim1000_ip" value="$(arg sim1000_ip)"/>
+    <arg name="sim_loc_param" value="$(arg sim_loc_param)"/>
+    <arg name="sim1000_param" value="$(arg sim1000_param)"/>
+  </include>
+
+  <!-- Motor Driver converter -->
+  <arg name="robot_param" default="$(find agv_define)/param/robot_param/robot.yaml"/>
+  <include file="$(find nav_converter)/launch/navConverter.launch">
+    <!-- <arg name="param_file" value="$(arg mlse_param_file)"/> -->
+    <arg name="robot_param" value="$(arg robot_param)"/>
+  </include>
+
+  <node pkg="test_charging" type="charger_server" respawn="false" name="charger_server" output="screen"></node>
+  <node pkg="test_charging" type="charger_client" respawn="false" name="charger_client" output="screen"></node>
+
+</launch>

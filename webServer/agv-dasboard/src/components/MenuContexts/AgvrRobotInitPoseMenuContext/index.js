@@ -1,0 +1,2 @@
+import AgvrRobotInitPoseMenuContext from "./AgvrRobotInitPoseMenuContext";
+export default AgvrRobotInitPoseMenuContext;
